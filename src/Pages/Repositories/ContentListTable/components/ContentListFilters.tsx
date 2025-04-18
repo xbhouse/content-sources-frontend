@@ -78,9 +78,15 @@ const ContentListFilters = ({
   const [selectedArches, setSelectedArches] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const isRedHatRepository = contentOrigin === ContentOrigin.REDHAT;
+  const { isRhel10Enabled } = useAppContext();
 
   const { distribution_arches = [], distribution_versions = [] } =
     queryClient.getQueryData<RepositoryParamsResponse>(REPOSITORY_PARAMS_KEY) || {};
+
+  // Remove once RHEL10 repos are enabled for prod
+  const enabledVersions = isRhel10Enabled
+    ? distribution_versions
+    : distribution_versions.filter((v) => v.name !== 'el10');
 
   const clearFilters = () => {
     setFilterType('Name/URL');
@@ -157,16 +163,16 @@ const ContentListFilters = ({
       isEmpty(versionNamesLabels) &&
       isEmpty(archNamesLabels) &&
       distribution_arches.length !== 0 &&
-      distribution_versions.length !== 0
+      enabledVersions.length !== 0
     ) {
       const arches = {};
       const versions = {};
       distribution_arches.forEach((arch) => (arches[arch.name] = arch.label));
-      distribution_versions.forEach((version) => (versions[version.name] = version.label));
+      enabledVersions.forEach((version) => (versions[version.name] = version.label));
       setVersionNamesLabels(versions);
       setArchNamesLabels(arches);
     }
-  }, [distribution_arches, distribution_versions]);
+  }, [distribution_arches, enabledVersions]);
 
   const Filter = useMemo(() => {
     switch (filterType) {

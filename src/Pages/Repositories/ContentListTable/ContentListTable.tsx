@@ -29,10 +29,12 @@ import {
   FilterData,
   IntrospectRepositoryRequestItem,
   ContentOrigin,
+  RepositoryParamsResponse,
 } from 'services/Content/ContentApi';
 import { SkeletonTable } from '@patternfly/react-component-groups';
 
 import {
+  REPOSITORY_PARAMS_KEY,
   useBulkDeleteContentItemMutate,
   useContentListQuery,
   useIntrospectRepositoryMutate,
@@ -101,7 +103,7 @@ const ContentListTable = () => {
   const classes = useStyles();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { rbac, features, contentOrigin, setContentOrigin } = useAppContext();
+  const { rbac, features, contentOrigin, setContentOrigin, isRhel10Enabled } = useAppContext();
   const [urlSearchParams, setUrlSearchParams] = useSearchParams();
   const storedPerPage = Number(localStorage.getItem(perPageKey)) || 20;
   const [page, setPage] = useState(1);
@@ -169,13 +171,33 @@ const ContentListTable = () => {
     [activeSortIndex, activeSortDirection],
   );
 
+  // Remove once RHEL10 repos are enabled for prod
+  const { distribution_versions = [] } =
+    queryClient.getQueryData<RepositoryParamsResponse>(REPOSITORY_PARAMS_KEY) || {};
+
+  const filterDataForEnabledRepos = {
+    ...filterData,
+    versions:
+      !isRhel10Enabled && notFiltered
+        ? distribution_versions.filter((v) => v.name !== 'el10').map((v) => v.label)
+        : filterData.versions,
+  };
+
   const {
     isLoading,
     error,
     isError,
     isFetching,
     data = { data: [], meta: { count: 0, limit: 20, offset: 0 } },
-  } = useContentListQuery(page, perPage, filterData, sortString, contentOrigin, true, polling);
+  } = useContentListQuery(
+    page,
+    perPage,
+    filterDataForEnabledRepos,
+    sortString,
+    contentOrigin,
+    true,
+    polling,
+  );
 
   useEffect(() => {
     if (isError) {

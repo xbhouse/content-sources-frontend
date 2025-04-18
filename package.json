@@ -34,7 +34,7 @@
     "@redhat-cloud-services/frontend-components-notifications": "^4.1.1",
     "@redhat-cloud-services/frontend-components-utilities": "^4.0.19",
     "@testing-library/dom": "^10.4.0",
-    "@unleash/proxy-client-react": "^4.4.0",
+    "@unleash/proxy-client-react": "^5.0.0",
     "axios": "^1.7.7",
     "classnames": "^2.5.1",
     "crypto-js": "^4.2.0",
@@ -55,10 +55,10 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@currents/playwright": "^1.9.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.15.0",
     "@playwright/test": "^1.49.1",
-    "@currents/playwright": "^1.9.4",
     "@redhat-cloud-services/tsc-transform-imports": "^1.0.19",
     "@redhat-cloud-services/types": "^1.0.16",
     "@testing-library/jest-dom": "^6.6.3",

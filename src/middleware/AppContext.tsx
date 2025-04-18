@@ -10,6 +10,7 @@ import { ChromeAPI } from '@redhat-cloud-services/types';
 import getRBAC from '@redhat-cloud-services/frontend-components-utilities/RBAC';
 import { Subscriptions } from 'services/Subscriptions/SubscriptionApi';
 import { useFetchSubscriptionsQuery } from 'services/Subscriptions/SubscriptionQueries';
+import { useFlag } from '@unleash/proxy-client-react';
 
 const getRegistry = _getRegistry as unknown as () => { register: ({ notifications }) => void };
 const { appname } = PackageJson.insights;
@@ -32,6 +33,7 @@ export interface AppContextInterface {
   chrome?: ChromeAPI;
   zeroState: boolean;
   setZeroState: (zeroState: boolean) => void;
+  isRhel10Enabled: boolean;
 }
 
 export const AppContext = createContext({} as AppContextInterface);
@@ -46,6 +48,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [contentOrigin, setContentOrigin] = useState<ContentOrigin>(ContentOrigin.CUSTOM);
   const { fetchFeatures, isLoading: isFetchingFeatures } = useFetchFeaturesQuery();
   const { data: subscriptions, isLoading: isFetchingSubscriptions } = useFetchSubscriptionsQuery();
+  const isRhel10Enabled = useFlag('content-sources.rhel10.enabled') || false;
 
   useEffect(() => {
     // Get chrome and register app
@@ -86,6 +89,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         chrome: chrome as ChromeAPI,
         zeroState,
         setZeroState,
+        isRhel10Enabled,
       }}
     >
       {children}

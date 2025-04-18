@@ -45,7 +45,7 @@ export default function DefineContentStep() {
     .map(({ label, name }) => ({ value: label, children: name }));
 
   const allowedDistributionVersions = distribution_versions
-    .filter(({ label }) => ['8', '9'].includes(label))
+    .filter(({ label }) => ['8', '9', '10'].includes(label))
     .map(({ label, name }) => ({ value: label, children: name }));
 
   return (
