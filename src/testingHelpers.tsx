@@ -389,6 +389,29 @@ export const defaultContentItemWithSnapshot: ContentItem = {
   last_introspection_status: '',
 };
 
+export const defaultLightwellContentItem: ContentItem = {
+  account_id: 'undefined',
+  distribution_arch: 'x86_64',
+  distribution_versions: ['el7'],
+  name: 'lightwell/ecosystem/level',
+  org_id: '13446804',
+  url: 'https://example.com/lightwell/ecosystem/level',
+  uuid: '3875c35b-a67a-4ac2-a989-21139433c177',
+  package_count: 1000,
+  origin: ContentOrigin.CUSTOM,
+  status: '',
+  last_introspection_error: '',
+  last_introspection_time: '',
+  failed_introspections_count: 0,
+  gpg_key: '',
+  metadata_verification: false,
+  snapshot: false,
+  module_hotfixes: false,
+  last_introspection_status: '',
+  ecosystem: 'java',
+  security_level: 'validated',
+};
+
 export const defaultTemplateItem: TemplateItem = {
   uuid: '50412eda-7df5-4fac-8556-278f45e2ef9b',
   name: 'Standard Template',
