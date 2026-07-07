@@ -4,7 +4,7 @@ import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react
 import { useMemo, useState } from 'react';
 
 import { RepositoryPackageReleaseInfo } from 'services/Content/ContentApi';
-import { stripLightwellVersionSuffix } from '../../helpers';
+import { compareReleasesDesc, sortVersionsDesc, stripLightwellVersionSuffix } from '../../helpers';
 
 type PackageReleasesTabProps = {
   version: string;
@@ -35,10 +35,22 @@ const PackageReleasesTab = ({
   const releaseMap = useMemo(() => {
     const map: Record<string, RepositoryPackageReleaseInfo> = {};
     latestReleases.forEach((r) => {
-      if (r.release) map[r.version] = r;
+      if (r.release) {
+        map[stripLightwellVersionSuffix(r.version)] = r;
+      }
     });
     return map;
   }, [latestReleases]);
+
+  const sortedVersions = useMemo(() => {
+    const sortedReleases = [...latestReleases].sort(compareReleasesDesc);
+
+    if (sortedReleases.length > 0) {
+      return sortedReleases.map((release) => stripLightwellVersionSuffix(release.version));
+    }
+
+    return sortVersionsDesc(allVersions.map(stripLightwellVersionSuffix));
+  }, [allVersions, latestReleases]);
 
   return (
     <Flex direction={{ default: 'column' }} gap={{ default: 'gapMd' }}>
@@ -104,15 +116,14 @@ const PackageReleasesTab = ({
           </Tr>
         </Thead>
         <Tbody>
-          {allVersions.map((v) => {
-            const stripped = stripLightwellVersionSuffix(v);
+          {sortedVersions.map((stripped) => {
             const isSelected = stripped === version;
-            const release = releaseMap[v] ?? releaseMap[stripped];
+            const release = releaseMap[stripped];
             const releaseVersion = release ? buildVersionFromRelease(release) : '';
             const copyText = release ? formatCopyText(releaseVersion) : '';
             const date = release?.created_at?.split('T')[0] ?? '—';
             return (
-              <Tr key={v}>
+              <Tr key={stripped}>
                 <Td dataLabel='Version'>
                   {isSelected ? (
                     <Flex gap={{ default: 'gapSm' }} alignItems={{ default: 'alignItemsCenter' }}>
@@ -122,7 +133,7 @@ const PackageReleasesTab = ({
                       </Label>
                     </Flex>
                   ) : (
-                    <Button variant='link' isInline onClick={() => onVersionSelect(v)}>
+                    <Button variant='link' isInline onClick={() => onVersionSelect(stripped)}>
                       {stripped}
                     </Button>
                   )}
