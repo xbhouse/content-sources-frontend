@@ -23,9 +23,15 @@ import {
   javaValidatedCopyCommand,
   mavenRemediatedDependencySnippet,
   mavenValidatedDependencySnippet,
+  pipConfRemediatedInstallSnippet,
+  pipConfValidatedInstallSnippet,
+  pipRemediatedInstallSnippet,
+  pipValidatedInstallSnippet,
   pythonRemediatedPipCommand,
   pythonValidatedPipCommand,
   ReactQueryTestWrapper,
+  requirementsRemediatedInstallSnippet,
+  requirementsValidatedInstallSnippet,
   otherPythonRemediatedPipCommand,
   otherJavaRemediatedCopyCommand,
 } from 'testingHelpers';
@@ -353,7 +359,7 @@ it('shows version dropdown for multi-version release packages', async () => {
   expect(menuItems).toHaveLength(2);
 });
 
-it('shows install section for python package', async () => {
+it('shows how to use section for python package', async () => {
   setupPythonRemediatedPackage();
 
   renderPackageDetails();
@@ -361,8 +367,11 @@ it('shows install section for python package', async () => {
   expect(
     await screen.findByRole('heading', { name: defaultPythonRemediatedRepositoryPackageItem.name }),
   ).toBeInTheDocument();
-  expect(await screen.findByRole('heading', { name: 'Install' })).toBeInTheDocument();
-  expect(screen.queryByText('How to use')).not.toBeInTheDocument();
+  expect(await screen.findByText('How to use')).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: 'Install' })).not.toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: 'pip' })).toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: 'requirements.txt' })).toBeInTheDocument();
+  expect(await screen.findByRole('tab', { name: 'pip.conf' })).toBeInTheDocument();
   expect(
     await screen.findByRole('button', { name: pythonRemediatedPipCommand }),
   ).toBeInTheDocument();
@@ -403,13 +412,33 @@ it('copies pip command to clipboard for remediated python package', async () => 
     pythonRemediatedPipCommand,
   );
 
-  // "Install" section of Overview tab
+  // pip tab in "How to use" section of Overview tab
   await assertClipboardCopy(
     writeText,
     async () => {
       await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
     },
-    pythonRemediatedPipCommand,
+    pipRemediatedInstallSnippet,
+  );
+
+  // requirements.txt tab in "How to use" section of Overview tab
+  await assertClipboardCopy(
+    writeText,
+    async () => {
+      await userEvent.click(await screen.findByRole('tab', { name: 'requirements.txt' }));
+      await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
+    },
+    requirementsRemediatedInstallSnippet,
+  );
+
+  // pip.conf tab in "How to use" section of Overview tab
+  await assertClipboardCopy(
+    writeText,
+    async () => {
+      await userEvent.click(await screen.findByRole('tab', { name: 'pip.conf' }));
+      await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
+    },
+    pipConfRemediatedInstallSnippet,
   );
 
   // "Releases for version x.x.x" section of Releases tab
@@ -531,13 +560,33 @@ it('copies pip command to clipboard for validated python package', async () => {
     pythonValidatedPipCommand,
   );
 
-  // "Install" section of Overview tab
+  // pip tab in "How to use" section of Overview tab
   await assertClipboardCopy(
     writeText,
     async () => {
       await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
     },
-    pythonValidatedPipCommand,
+    pipValidatedInstallSnippet,
+  );
+
+  // requirements.txt tab in "How to use" section of Overview tab
+  await assertClipboardCopy(
+    writeText,
+    async () => {
+      await userEvent.click(await screen.findByRole('tab', { name: 'requirements.txt' }));
+      await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
+    },
+    requirementsValidatedInstallSnippet,
+  );
+
+  // pip.conf tab in "How to use" section of Overview tab
+  await assertClipboardCopy(
+    writeText,
+    async () => {
+      await userEvent.click(await screen.findByRole('tab', { name: 'pip.conf' }));
+      await userEvent.click(await screen.findByRole('button', { name: 'Copy' }));
+    },
+    pipConfValidatedInstallSnippet,
   );
 });
 

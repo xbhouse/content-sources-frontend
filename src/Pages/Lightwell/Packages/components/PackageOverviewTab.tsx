@@ -15,7 +15,10 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { createRef, useMemo, useState } from 'react';
 
 import { ConnectSnippetTab } from '../../Repositories/components/connectSnippets';
-import { getPackageDependencySnippetTabs } from './packageDependencySnippets';
+import {
+  getMavenPackageUsageSnippetTabs,
+  getPythonPackageUsageSnippetTabs,
+} from './packageDependencySnippets';
 
 type PackageOverviewTabProps = {
   isMaven: boolean;
@@ -25,7 +28,6 @@ type PackageOverviewTabProps = {
   hasRelease: boolean;
   summary?: string;
   sourceUrl?: string;
-  installCommand?: string;
 };
 
 const PackageOverviewTab = ({
@@ -36,17 +38,22 @@ const PackageOverviewTab = ({
   hasRelease,
   summary,
   sourceUrl = '',
-  installCommand,
 }: PackageOverviewTabProps) => {
   const tabs = useMemo(
     () =>
-      getPackageDependencySnippetTabs({
-        group,
-        name,
-        release: latestRelease,
-        sourceUrl,
-      }),
-    [group, name, latestRelease, sourceUrl],
+      isMaven
+        ? getMavenPackageUsageSnippetTabs({
+            group,
+            name,
+            release: latestRelease,
+            sourceUrl,
+          })
+        : getPythonPackageUsageSnippetTabs({
+            name,
+            release: latestRelease,
+            sourceUrl,
+          }),
+    [isMaven, group, name, latestRelease, sourceUrl],
   );
   const [activeTabKey, setActiveTabKey] = useState(tabs[0]?.eventKey ?? '');
 
@@ -104,57 +111,40 @@ const PackageOverviewTab = ({
           )}
         </Content>
       </Stack>
-      {isMaven ? (
-        <Stack hasGutter>
-          <Title headingLevel='h2' size='lg'>
-            How to use
-          </Title>
-          <Tabs
-            activeKey={activeTabKey}
-            onSelect={(_, eventKey) => setActiveTabKey(eventKey as string)}
-            aria-label='Package dependency snippets'
-            ouiaId='lightwell-package-dependency-tabs'
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.eventKey}
-                eventKey={tab.eventKey}
-                title={<TabTitleText>{tab.title}</TabTitleText>}
-                tabContentRef={tabRefs[tab.eventKey]}
-                ouiaId={`lightwell-dependency-tab-${tab.eventKey}`}
-              />
-            ))}
-          </Tabs>
-          {tabs.map((tab, index) => (
-            <TabContent
+      <Stack hasGutter>
+        <Title headingLevel='h2' size='lg'>
+          How to use
+        </Title>
+        <Tabs
+          activeKey={activeTabKey}
+          onSelect={(_, eventKey) => setActiveTabKey(eventKey as string)}
+          aria-label='Package dependency snippets'
+          ouiaId='lightwell-package-dependency-tabs'
+        >
+          {tabs.map((tab) => (
+            <Tab
               key={tab.eventKey}
               eventKey={tab.eventKey}
-              id={`lightwell-dependency-panel-${tab.eventKey}`}
-              aria-label={tab.title}
-              ref={tabRefs[tab.eventKey]}
-              hidden={index > 0}
-              className={spacing.ptSm}
-            >
-              {renderTabPanel(tab)}
-            </TabContent>
+              title={<TabTitleText>{tab.title}</TabTitleText>}
+              tabContentRef={tabRefs[tab.eventKey]}
+              ouiaId={`lightwell-dependency-tab-${tab.eventKey}`}
+            />
           ))}
-        </Stack>
-      ) : (
-        <Stack hasGutter>
-          <Title headingLevel='h2' size='lg'>
-            Install
-          </Title>
-          <ClipboardCopy
-            isReadOnly
-            isCode
-            hoverTip='Copy'
-            clickTip='Copied'
-            variant={ClipboardCopyVariant.inline}
+        </Tabs>
+        {tabs.map((tab, index) => (
+          <TabContent
+            key={tab.eventKey}
+            eventKey={tab.eventKey}
+            id={`lightwell-dependency-panel-${tab.eventKey}`}
+            aria-label={tab.title}
+            ref={tabRefs[tab.eventKey]}
+            hidden={index > 0}
+            className={spacing.ptSm}
           >
-            {installCommand ?? `pip install ${name}==${latestRelease}`}
-          </ClipboardCopy>
-        </Stack>
-      )}
+            {renderTabPanel(tab)}
+          </TabContent>
+        ))}
+      </Stack>
     </Flex>
   );
 };

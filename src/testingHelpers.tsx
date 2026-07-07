@@ -557,6 +557,28 @@ export const mavenValidatedDependencySnippet = `<!-- Source: ${defaultLightwellC
 export const gradleValidatedDependencySnippet = `// Source: ${defaultLightwellContentItem.published_distribution_url}
 implementation("${defaultLightwellRepositoryPackageItem.group}:${defaultLightwellRepositoryPackageItem.name}:2.21.2")`;
 
+export const pipRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
+pip install --index-url ${defaultPythonRemediatedContentItem.published_distribution_url} ${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
+
+export const requirementsRemediatedInstallSnippet = `# Source: ${defaultPythonRemediatedContentItem.published_distribution_url}
+--index-url ${defaultPythonRemediatedContentItem.published_distribution_url}
+${defaultPythonRemediatedRepositoryPackageItem.name}==2.32.0.rhlw-0002`;
+
+export const pipConfRemediatedInstallSnippet = `# ~/.config/pip/pip.conf
+[global]
+index-url = ${defaultPythonRemediatedContentItem.published_distribution_url}`;
+
+export const pipValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
+pip install --index-url ${defaultPythonValidatedContentItem.published_distribution_url} ${defaultPythonValidatedPackageItem.name}==2.21.2`;
+
+export const requirementsValidatedInstallSnippet = `# Source: ${defaultPythonValidatedContentItem.published_distribution_url}
+--index-url ${defaultPythonValidatedContentItem.published_distribution_url}
+${defaultPythonValidatedPackageItem.name}==2.21.2`;
+
+export const pipConfValidatedInstallSnippet = `# ~/.config/pip/pip.conf
+[global]
+index-url = ${defaultPythonValidatedContentItem.published_distribution_url}`;
+
 export const defaultTemplateItem: TemplateItem = {
   uuid: '50412eda-7df5-4fac-8556-278f45e2ef9b',
   name: 'Standard Template',
